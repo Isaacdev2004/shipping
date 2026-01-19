@@ -77,11 +77,12 @@ SECRET_KEY=*ykgn+fbv-4@77_7vwk^ewm%znr#(eov!7&jrpw*dfsks8egwf
    - **Root Directory**: `shipping-frontend`
    - **Build Command**: `npm run build` (auto-detected)
    - **Output Directory**: `build` (auto-detected)
-6. **Environment Variables** → Add:
-   - **Name**: `REACT_APP_API_URL`
+6. **Environment Variables** → Click "Add" → Add:
+   - **Key**: `REACT_APP_API_URL`
    - **Value**: `https://shipping-backend.onrender.com` (from Step 2)
-   - (Replace with your actual Render backend URL)
-7. **Click "Deploy"**
+   - ⚠️ **IMPORTANT**: Replace with your actual Render backend URL
+   - Click "Save"
+7. **Click "Deploy"** button
 8. **Wait for build** (takes 2-3 minutes)
 9. **Get your frontend URL**:
    - Vercel shows: `https://your-app.vercel.app`
