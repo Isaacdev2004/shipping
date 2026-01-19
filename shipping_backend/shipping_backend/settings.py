@@ -25,7 +25,15 @@ SECRET_KEY = "django-insecure-aa&!z)rt-c@hwsoz&rp61ks%_q5^ml7a*9=s3h+g7=cc82i1_=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# ALLOWED_HOSTS - allow all Render subdomains for flexibility
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+if os.environ.get('RENDER'):
+    # On Render, allow all .onrender.com subdomains
+    ALLOWED_HOSTS.append('*.onrender.com')
+    # Also add specific host if provided
+    render_host = os.environ.get('ALLOWED_HOSTS')
+    if render_host:
+        ALLOWED_HOSTS.append(render_host)
 
 
 # Application definition
