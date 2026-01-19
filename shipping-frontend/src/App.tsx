@@ -60,14 +60,6 @@ function Step3Page() {
   const navigate = useNavigate();
   const [shipments, setShipments] = useState<Shipment[]>([]);
 
-  const calculateTotalFromShipments = useCallback((shipmentsToCalculate: Shipment[]) => {
-    // This function is used internally but doesn't need to update state
-    // The total price is managed by AppContent component
-    return shipmentsToCalculate.reduce((sum, s) => {
-      return sum + (s.shipping_price ? parseFloat(s.shipping_price) : 0);
-    }, 0);
-  }, []);
-
   const loadShipments = useCallback(async () => {
     try {
       const response = await shipmentsAPI.getAll();
