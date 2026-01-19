@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,15 +26,22 @@ SECRET_KEY = "django-insecure-aa&!z)rt-c@hwsoz&rp61ks%_q5^ml7a*9=s3h+g7=cc82i1_=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS - allow all Render subdomains for flexibility
+# ALLOWED_HOSTS - dynamically set based on environment
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-if os.environ.get('RENDER'):
-    # On Render, allow all .onrender.com subdomains
-    ALLOWED_HOSTS.append('*.onrender.com')
-    # Also add specific host if provided
-    render_host = os.environ.get('ALLOWED_HOSTS')
-    if render_host:
-        ALLOWED_HOSTS.append(render_host)
+
+# On Render, use the RENDER_EXTERNAL_HOSTNAME environment variable
+# Render automatically sets this to your service URL
+render_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if render_hostname:
+    ALLOWED_HOSTS.append(render_hostname)
+    # Also allow without port if present
+    if ':' in render_hostname:
+        ALLOWED_HOSTS.append(render_hostname.split(':')[0])
+
+# Fallback: if RENDER environment variable is set but no hostname, allow all
+# This is less secure but ensures the app works
+if os.environ.get('RENDER') and not render_hostname:
+    ALLOWED_HOSTS = ['*']
 
 
 # Application definition
