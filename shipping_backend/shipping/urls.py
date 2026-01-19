@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    AddressViewSet, PackageViewSet, SavedAddressViewSet,
+    api_root, AddressViewSet, PackageViewSet, SavedAddressViewSet,
     SavedPackageViewSet, ShippingServiceViewSet, ShipmentViewSet
 )
 
@@ -14,5 +14,6 @@ router.register(r"shipping-services", ShippingServiceViewSet)
 router.register(r"shipments", ShipmentViewSet)
 
 urlpatterns = [
+    path("", api_root, name="api-root"),
     path("api/", include(router.urls)),
 ]

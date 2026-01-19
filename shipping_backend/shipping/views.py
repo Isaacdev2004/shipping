@@ -1,6 +1,6 @@
 import logging
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db import transaction
@@ -14,6 +14,26 @@ from .serializers import (
 from .services import CSVParser, AddressValidator, CSVParseError
 
 logger = logging.getLogger("shipping")
+
+
+@api_view(['GET'])
+def api_root(request):
+    """Root endpoint that provides API information"""
+    return Response({
+        "name": "Shipping Label Creation API",
+        "version": "1.0.0",
+        "status": "active",
+        "endpoints": {
+            "shipments": "/api/shipments/",
+            "upload_csv": "/api/shipments/upload_csv/",
+            "addresses": "/api/addresses/",
+            "packages": "/api/packages/",
+            "saved_addresses": "/api/saved-addresses/",
+            "saved_packages": "/api/saved-packages/",
+            "shipping_services": "/api/shipping-services/",
+            "admin": "/admin/"
+        }
+    })
 
 
 class AddressViewSet(viewsets.ModelViewSet):
