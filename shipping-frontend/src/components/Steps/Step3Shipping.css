@@ -1,0 +1,40 @@
+.step3-shipping {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.bulk-service-actions {
+  background: #eff6ff;
+  border: 1px solid #3b82f6;
+  border-radius: 6px;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.bulk-service-actions span {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.bulk-service-actions button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.bulk-service-actions button:hover {
+  background-color: #2563eb;
+}
+
+.price-cell {
+  font-weight: 600;
+  color: #059669;
+}
