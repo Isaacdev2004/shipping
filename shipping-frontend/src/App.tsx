@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
 import Step1Upload from './components/Steps/Step1Upload';
@@ -13,10 +13,8 @@ import './App.css';
 
 function UploadPage() {
   const navigate = useNavigate();
-  const [shipments, setShipments] = useState<Shipment[]>([]);
 
-  const handleUploadSuccess = (uploadedShipments: Shipment[]) => {
-    setShipments(uploadedShipments);
+  const handleUploadSuccess = () => {
     navigate('/step2');
   };
 
@@ -61,40 +59,27 @@ function Step2Page() {
 function Step3Page() {
   const navigate = useNavigate();
   const [shipments, setShipments] = useState<Shipment[]>([]);
-  const [totalPrice, setTotalPrice] = useState(0);
 
-  useEffect(() => {
-    loadShipments();
-    calculateTotal();
+  const calculateTotalFromShipments = useCallback((shipmentsToCalculate: Shipment[]) => {
+    // This function is used internally but doesn't need to update state
+    // The total price is managed by AppContent component
+    return shipmentsToCalculate.reduce((sum, s) => {
+      return sum + (s.shipping_price ? parseFloat(s.shipping_price) : 0);
+    }, 0);
   }, []);
 
-  const loadShipments = async () => {
+  const loadShipments = useCallback(async () => {
     try {
       const response = await shipmentsAPI.getAll();
       setShipments(response.data);
-      calculateTotalFromShipments(response.data);
     } catch (error) {
       console.error('Failed to load shipments:', error);
     }
-  };
+  }, []);
 
-  const calculateTotalFromShipments = (shipmentsToCalculate: Shipment[]) => {
-    const total = shipmentsToCalculate.reduce((sum, s) => {
-      return sum + (s.shipping_price ? parseFloat(s.shipping_price) : 0);
-    }, 0);
-    setTotalPrice(total);
-  };
-
-  const calculateTotal = async () => {
-    try {
-      const response = await shipmentsAPI.getTotalPrice();
-      setTotalPrice(response.data.total);
-    } catch (error) {
-      // Calculate locally
-      const response = await shipmentsAPI.getAll();
-      calculateTotalFromShipments(response.data);
-    }
-  };
+  useEffect(() => {
+    loadShipments();
+  }, [loadShipments]);
 
   const handleContinue = (updatedShipments: Shipment[]) => {
     setShipments(updatedShipments);
