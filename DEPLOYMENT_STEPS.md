@@ -1,7 +1,7 @@
-# 🚀 Deployment Steps - Follow This Guide
+# 🚀 Deployment Steps - Render Backend + Vercel Frontend
 
 ## Quick Summary
-- **Backend**: Railway.app (free, auto-detects Python)
+- **Backend**: Render.com (free tier available)
 - **Frontend**: Vercel.com (free, excellent React support)
 - **Time**: ~15 minutes total
 
@@ -17,28 +17,49 @@ cd shipping_backend
 
 **Copy the output** - you'll need it in Step 2!
 
+**Or use this pre-generated one:**
+```
+SECRET_KEY=*ykgn+fbv-4@77_7vwk^ewm%znr#(eov!7&jrpw*dfsks8egwf
+```
+
 ---
 
-## STEP 2: Deploy Backend to Railway (5 minutes)
+## STEP 2: Deploy Backend to Render (5 minutes)
 
-1. **Visit**: https://railway.app
-2. **Sign up** with GitHub (easiest)
-3. **Click "New Project"** → **"Deploy from GitHub repo"**
-   - If you don't have GitHub repo, choose **"Empty Project"** and upload `shipping_backend` folder
-4. **If using GitHub**:
-   - Select your repository
-   - Set **Root Directory** to: `shipping_backend`
-5. **Wait for Railway to detect Python** (automatic)
-6. **Go to Variables tab** and add:
+1. **Visit**: https://render.com
+2. **Sign up** with GitHub (easiest - connects to your repo automatically)
+3. **Click "New +"** → **"Web Service"**
+4. **Connect your GitHub repository**:
+   - Select: `Isaacdev2004/shipping`
+   - Or paste: `https://github.com/Isaacdev2004/shipping.git`
+5. **Configure the service**:
+   - **Name**: `shipping-backend` (or any name you like)
+   - **Region**: Choose closest to you (e.g., `Oregon (US West)`)
+   - **Branch**: `main`
+   - **Root Directory**: `shipping_backend`
+   - **Runtime**: `Python 3`
+   - **Build Command**: 
+     ```
+     pip install -r requirements.txt && python manage.py migrate && python manage.py seed_data
+     ```
+   - **Start Command**: 
+     ```
+     gunicorn shipping_backend.wsgi:application --bind 0.0.0.0:$PORT
+     ```
+6. **Environment Variables** (click "Advanced" → "Add Environment Variable"):
    ```
    SECRET_KEY=<paste-the-key-from-step-1>
    DEBUG=False
-   ALLOWED_HOSTS=*.up.railway.app
+   ALLOWED_HOSTS=shipping-backend.onrender.com
    ```
-7. **Railway auto-deploys!** Wait for it to finish
-8. **Get your backend URL**:
-   - Railway shows: `https://your-app-name.up.railway.app`
-   - **Test it**: Visit `https://your-app-name.up.railway.app/api/shipments/`
+   (Replace `shipping-backend` with your actual service name if different)
+7. **Click "Create Web Service"**
+8. **Wait for deployment** (takes 3-5 minutes)
+   - Watch the build logs
+   - Should see: "Your service is live"
+9. **Get your backend URL**:
+   - Render shows: `https://shipping-backend.onrender.com`
+   - **Test it**: Visit `https://shipping-backend.onrender.com/api/shipments/`
    - Should see DRF API page ✅
    - **Copy this URL** - you'll need it for frontend!
 
@@ -49,15 +70,17 @@ cd shipping_backend
 1. **Visit**: https://vercel.com
 2. **Sign up** with GitHub
 3. **Click "Add New"** → **"Project"**
-4. **Import your GitHub repository**
+4. **Import your GitHub repository**:
+   - Select: `Isaacdev2004/shipping`
 5. **Configure**:
    - **Framework Preset**: Create React App (auto-detected)
    - **Root Directory**: `shipping-frontend`
-   - **Build Command**: `npm run build` (auto)
-   - **Output Directory**: `build` (auto)
+   - **Build Command**: `npm run build` (auto-detected)
+   - **Output Directory**: `build` (auto-detected)
 6. **Environment Variables** → Add:
    - **Name**: `REACT_APP_API_URL`
-   - **Value**: `https://your-backend-url.up.railway.app` (from Step 2)
+   - **Value**: `https://shipping-backend.onrender.com` (from Step 2)
+   - (Replace with your actual Render backend URL)
 7. **Click "Deploy"**
 8. **Wait for build** (takes 2-3 minutes)
 9. **Get your frontend URL**:
@@ -68,13 +91,14 @@ cd shipping_backend
 
 ## STEP 4: Update Backend CORS (2 minutes)
 
-1. **Go back to Railway** → Your backend service → **Variables**
-2. **Add new variable**:
+1. **Go back to Render** → Your backend service → **Environment** tab
+2. **Add new environment variable**:
    ```
    CORS_ALLOWED_ORIGINS=https://your-frontend.vercel.app
    ```
    (Use the URL from Step 3)
-3. **Railway auto-redeploys** (watch the logs)
+3. **Save** - Render will auto-redeploy
+4. **Wait for redeploy** (watch the logs)
 
 ---
 
@@ -90,7 +114,7 @@ cd shipping_backend
 
 ## 🎉 You're Live!
 
-**Backend**: `https://your-app.up.railway.app`  
+**Backend**: `https://shipping-backend.onrender.com`  
 **Frontend**: `https://your-app.vercel.app`
 
 **Save both URLs** - you'll need them for submission!
@@ -99,17 +123,29 @@ cd shipping_backend
 
 ## 🆘 Troubleshooting
 
-### Backend Issues
+### Backend Issues (Render)
 
-**500 Error?**
-- Check Railway logs (click service → Logs tab)
+**Build fails?**
+- Check Render logs (click service → Logs tab)
+- Verify `requirements.txt` is in `shipping_backend` folder
+- Check build command is correct
+- Ensure root directory is set to `shipping_backend`
+
+**500 Error after deployment?**
+- Check Render logs
 - Verify SECRET_KEY is set correctly
-- Check ALLOWED_HOSTS includes `*.up.railway.app`
+- Check ALLOWED_HOSTS includes your Render domain
+- Ensure migrations ran successfully
 
 **Can't access API?**
-- Visit: `https://your-backend.up.railway.app/api/shipments/`
+- Visit: `https://your-backend.onrender.com/api/shipments/`
 - Should see DRF browsable API
-- If 404, check root directory is set to `shipping_backend`
+- If 404, check root directory setting
+
+**Service goes to sleep?**
+- Render free tier spins down after 15 minutes of inactivity
+- First request after sleep takes ~30 seconds (cold start)
+- This is normal for free tier
 
 ### Frontend Issues
 
@@ -119,33 +155,56 @@ cd shipping_backend
 - Ensure backend URL is accessible
 
 **CORS errors?**
-- Add frontend URL to `CORS_ALLOWED_ORIGINS` in Railway
+- Add frontend URL to `CORS_ALLOWED_ORIGINS` in Render
 - Wait for redeploy
 - Clear browser cache
 
 ---
 
-## 📝 Alternative: Render.com
+## 📝 Render-Specific Notes
 
-If Railway doesn't work:
+### Free Tier Limitations:
+- **Spins down after 15 min inactivity** (first request is slow)
+- **750 hours/month free** (enough for 2+ weeks)
+- **Auto-deploys** on git push to main branch
 
-1. Go to render.com → New Web Service
-2. Connect GitHub or upload code
-3. Settings:
-   - **Build**: `cd shipping_backend && pip install -r ../requirements.txt && python manage.py migrate && python manage.py seed_data`
-   - **Start**: `cd shipping_backend && gunicorn shipping_backend.wsgi:application --bind 0.0.0.0:$PORT`
-4. Add environment variables (same as Railway)
-5. Deploy!
+### To Keep Service Awake:
+- Use a service like UptimeRobot (free) to ping your backend every 10 minutes
+- Or upgrade to paid tier
+
+### Database:
+- Render free tier includes PostgreSQL
+- Currently using SQLite (works fine for demo)
+- Can upgrade to PostgreSQL later if needed
 
 ---
 
 ## ✅ Final Checklist
 
-- [ ] Backend deployed and accessible
-- [ ] Frontend deployed and accessible  
-- [ ] CORS configured
-- [ ] Full flow tested
+- [ ] Backend deployed on Render
+- [ ] Backend URL tested (shows DRF API)
+- [ ] Frontend deployed on Vercel
+- [ ] CORS updated in Render
+- [ ] Full flow tested end-to-end
 - [ ] Both URLs saved
 - [ ] Ready for submission!
+
+---
+
+## 🔄 Updating Code
+
+After making changes:
+1. **Commit and push to GitHub**:
+   ```bash
+   git add .
+   git commit -m "Your changes"
+   git push
+   ```
+2. **Render auto-deploys** (if connected to GitHub)
+3. **Vercel auto-deploys** (if connected to GitHub)
+
+Both platforms watch your GitHub repo and auto-deploy on push!
+
+---
 
 **Let's deploy! 🚀**
