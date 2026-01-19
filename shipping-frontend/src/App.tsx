@@ -25,18 +25,18 @@ function Step2Page() {
   const navigate = useNavigate();
   const [shipments, setShipments] = useState<Shipment[]>([]);
 
-  useEffect(() => {
-    loadShipments();
-  }, []);
-
-  const loadShipments = async () => {
+  const loadShipments = useCallback(async () => {
     try {
       const response = await shipmentsAPI.getAll();
       setShipments(response.data);
     } catch (error) {
       console.error('Failed to load shipments:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadShipments();
+  }, [loadShipments]);
 
   const handleContinue = (updatedShipments: Shipment[]) => {
     setShipments(updatedShipments);
@@ -99,18 +99,18 @@ function PurchasePage() {
   const navigate = useNavigate();
   const [shipments, setShipments] = useState<Shipment[]>([]);
 
-  useEffect(() => {
-    loadShipments();
-  }, []);
-
-  const loadShipments = async () => {
+  const loadShipments = useCallback(async () => {
     try {
       const response = await shipmentsAPI.getAll();
       setShipments(response.data);
     } catch (error) {
       console.error('Failed to load shipments:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadShipments();
+  }, [loadShipments]);
 
   const handleSuccess = () => {
     navigate('/success');
@@ -129,18 +129,18 @@ function SuccessPage() {
   const navigate = useNavigate();
   const [shipments, setShipments] = useState<Shipment[]>([]);
 
-  useEffect(() => {
-    loadShipments();
-  }, []);
-
-  const loadShipments = async () => {
+  const loadShipments = useCallback(async () => {
     try {
       const response = await shipmentsAPI.getAll();
       setShipments(response.data);
     } catch (error) {
       console.error('Failed to load shipments:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadShipments();
+  }, [loadShipments]);
 
   const handleNewUpload = () => {
     navigate('/upload');
