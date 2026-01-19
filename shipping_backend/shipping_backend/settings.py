@@ -163,7 +163,13 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://shipping-five-xi.vercel.app",
 ]
+
+# Add Vercel frontend URL from environment variable if provided
+vercel_url = os.environ.get('VERCEL_URL')
+if vercel_url:
+    CORS_ALLOWED_ORIGINS.append(f"https://{vercel_url}")
 
 CORS_ALLOW_CREDENTIALS = True
 
